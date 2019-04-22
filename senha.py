@@ -22,7 +22,14 @@ def load():
 
 def find(expr):
     data = load()
-    return [item for item in data if expr in item['name']]
+    alternatives = []
+    for item in data:
+        if item['name'] == expr:
+            alternatives.append(item)
+            break
+        elif expr in item['name']:
+            alternatives.append(item)
+    return alternatives
 
 
 def to_clipboard(expr):
