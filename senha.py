@@ -22,10 +22,7 @@ def load():
 
 def find(expr):
     data = load()
-    for item in data:
-        if expr in item['name']:
-            return item
-    return None
+    return [item for item in data if expr in item['name']]
 
 
 def to_clipboard(expr):
@@ -53,10 +50,14 @@ def add(entry):
 
 
 def update(expr):
-    entry = find(expr)
-    if entry is None:
+    entries = find(expr)
+    if len(entries) == 0:
         print("Nenhuma entrada para '{}'".format())
         return False
+    elif len(entries) > 1:
+        print("Múltiplas alternativas, seja mais específico: {}".format(', '.join([e['name'] for e in entries])))
+        return False
+    entry = entries[0]
     print("Atualizando {}. User: {}".format(entry['name'], entry['user']))
     data = load()
     updated_entry = read_entry(entry['name'])
@@ -75,6 +76,17 @@ def store(data: str):
         print(err)
 
 
+def search(expr):
+    items = find(expr)
+    if len(items) == 0:
+        print(f"No password found for '{expr}'")
+    elif len(items) > 1:
+        print("Múltiplas alternativas, seja mais específico: {}".format(', '.join([e['name'] for e in items])))
+    else:
+        print(items[0]['name'], items[0]['user'])
+        to_clipboard(items[0]['password'])
+
+
 def suggest():
     ss = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[]^_'
     return ''.join(random.sample(ss, 15))
@@ -91,12 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('--dump', action='store_true')
     args = parser.parse_args()
     if args.find:
-        item = find(args.find)
-        if item is None:
-            print(f"No password found for '{args.find}'")
-        else:
-            print(item['name'], item['user'])
-            to_clipboard(item['password'])
+        search(args.find) # TODO search and find... use better names!
     elif args.add:
         add(read_entry(args.add))
     elif args.update:
