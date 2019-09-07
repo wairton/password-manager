@@ -94,6 +94,20 @@ def search(expr):
         to_clipboard(items[0]['password'])
 
 
+def remove(name):
+    data = load()
+    index = None
+    for i, item in enumerate(data):
+        if item['name'] == name:
+            index = i
+    if index:
+        data.pop(index)
+        store(json.dumps(data))
+        print("entry '{}' removed".format(name))
+    else:
+        print("entry '{}' not found".format(name))
+
+
 def suggest():
     ss = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[]^_'
     to_clipboard(''.join(random.sample(ss, 15)))
@@ -104,7 +118,8 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--find', type=str)
     parser.add_argument('-a', '--add', type=str)
     parser.add_argument('-u', '--update', type=str)
-    parser.add_argument('-d', '--delete', type=str)
+    parser.add_argument('-r', '--remove', action='store_true')
+    parser.add_argument('-e', '--entry', type=str)
     parser.add_argument('-s', '--suggest', action='store_true')
     parser.add_argument('--names', action='store_true')
     parser.add_argument('--dump', action='store_true')
@@ -115,8 +130,15 @@ if __name__ == '__main__':
         add(read_entry(args.add))
     elif args.update:
         update(args.update)
+    elif args.remove:
+        if args.entry is None:
+            print("entry is required to delete")
+        else:
+            remove(args.entry)
     elif args.names:
         print([a['name'] for a in load()])
     elif args.suggest:
         suggest()
+    else:
+        parser.print_usage()
 
