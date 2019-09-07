@@ -96,7 +96,7 @@ def search(expr):
 
 def suggest():
     ss = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[]^_'
-    return ''.join(random.sample(ss, 15))
+    to_clipboard(''.join(random.sample(ss, 15)))
 
 
 if __name__ == '__main__':
@@ -118,5 +118,5 @@ if __name__ == '__main__':
     elif args.names:
         print([a['name'] for a in load()])
     elif args.suggest:
-        print(suggest())
+        suggest()
 
